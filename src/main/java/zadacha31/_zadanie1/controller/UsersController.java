@@ -8,19 +8,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import zadacha31._zadanie1.model.User;
 import zadacha31._zadanie1.service.UserService;
 
 @Controller
 @RequestMapping("/users")
 public class UsersController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
-    public UserService setUserService(UserService userService) {
+    public UsersController(UserService userService) {
         this.userService = userService;
-        return userService;
     }
 
     @GetMapping
@@ -39,16 +37,14 @@ public class UsersController {
             @RequestParam("name") String name,
             @RequestParam("surname") String surname) {
 
-        User user = new User(name, surname);
-        userService.addUser(user);
+        userService.addUser(name, surname);
 
         return "redirect:/users";
     }
 
     @GetMapping("/edit")
     public String showEditForm(@RequestParam("id") Long id, Model model) {
-        User user = userService.getUser(id);
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.getUser(id));
         return "editUser";
     }
 
@@ -58,13 +54,7 @@ public class UsersController {
             @RequestParam("name") String name,
             @RequestParam("surname") String surname) {
 
-        User user = userService.getUser(id);
-        if (user != null) {
-            user.setName(name);
-            user.setSurname(surname);
-            userService.updateUser(user);
-        }
-
+        userService.updateUser(id, name, surname);
         return "redirect:/users";
     }
 
